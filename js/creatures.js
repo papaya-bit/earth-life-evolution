@@ -1,8 +1,44 @@
 // ===== 生物数据 =====
 export class CreatureData {
     constructor() {
-        // 生物数据库
+        // 生物数据库 - 80+ 生物，覆盖从太古宙到第四纪
         this.creatures = [
+            // ===== 冥古宙 (46-40亿年前) =====
+            {
+                id: 'hadean_earth',
+                name: '原始地球',
+                period: '45-40亿年前',
+                startYear: 4500,
+                endYear: 4000,
+                type: 'land',
+                lat: 0,
+                lon: 0,
+                icon: '🔥',
+                color: 0xff4500,
+                size: '行星',
+                diet: '无',
+                habitat: '熔岩海洋',
+                status: '已演化',
+                description: '地球形成初期，表面被熔岩海洋覆盖。没有固体地壳，没有水，没有生命。月球刚刚形成，地球自转极快。'
+            },
+            {
+                id: 'zircon',
+                name: '锆石晶体',
+                period: '44-40亿年前',
+                startYear: 4400,
+                endYear: 4000,
+                type: 'land',
+                lat: -30,
+                lon: 115,
+                icon: '💎',
+                color: 0xffd700,
+                size: '微米级',
+                diet: '无',
+                habitat: '地壳',
+                status: '现存矿物',
+                description: '地球上最古老的矿物，记录了早期地球环境信息。来自西澳大利亚的杰克山锆石是目前发现的最古老地球物质。'
+            },
+            
             // ===== 太古宙 (40-25亿年前) =====
             {
                 id: 'cyanobacteria',
@@ -20,6 +56,74 @@ export class CreatureData {
                 habitat: '浅海',
                 status: '现存后代',
                 description: '地球上最早的光合生物之一，通过光合作用释放氧气，逐渐改变地球大气成分，为大氧化事件奠定基础。它们形成的叠层石是最早的生物沉积构造。'
+            },
+            {
+                id: 'stromatolites',
+                name: '叠层石',
+                period: '35-5亿年前',
+                startYear: 3500,
+                endYear: 500,
+                type: 'marine',
+                lat: -20,
+                lon: 120,
+                icon: '🪨',
+                color: 0x8d6e63,
+                size: '厘米-米级',
+                diet: '光合作用',
+                habitat: '浅海',
+                status: '现存（稀少）',
+                description: '由蓝藻等微生物群落形成的层状沉积构造。它们是地球上最古老的生命记录，在澳大利亚、加拿大等地发现了35亿年前的叠层石。'
+            },
+            {
+                id: 'archean_bacteria',
+                name: '古细菌',
+                period: '38-25亿年前',
+                startYear: 3800,
+                endYear: 2500,
+                type: 'marine',
+                lat: 10,
+                lon: -20,
+                icon: '🦠',
+                color: 0x9c27b0,
+                size: '微观',
+                diet: '化学合成',
+                habitat: '深海热泉',
+                status: '现存后代',
+                description: '极端环境微生物，生活在深海热泉等高温环境中。它们代表了生命演化树中最古老的分支之一。'
+            },
+            {
+                id: 'prokaryotes',
+                name: '原核生物群',
+                period: '40-25亿年前',
+                startYear: 4000,
+                endYear: 2500,
+                type: 'marine',
+                lat: 5,
+                lon: 45,
+                icon: '🔬',
+                color: 0x00bcd4,
+                size: '微观',
+                diet: '多样',
+                habitat: '海洋',
+                status: '现存',
+                description: '细菌和古菌的统称，太古宙海洋中唯一的生命形式。它们开创了光合作用，改变了地球大气和海洋化学成分。'
+            },
+            {
+                id: 'banded_iron',
+                name: '条带状铁矿',
+                period: '38-18亿年前',
+                startYear: 3800,
+                endYear: 1800,
+                type: 'marine',
+                lat: -15,
+                lon: 118,
+                icon: '⛓️',
+                color: 0xb71c1c,
+                size: '公里级',
+                diet: '无',
+                habitat: '海底',
+                status: '化石记录',
+                description: '蓝藻光合作用释放的氧气与海水中的二价铁反应形成三价铁沉积。条带状铁矿是地球大氧化事件的地质记录。'
             },
             
             // ===== 元古宙 (25-5.41亿年前) =====
@@ -73,6 +177,74 @@ export class CreatureData {
                 habitat: '海底',
                 status: '灭绝',
                 description: '埃迪卡拉纪的奇怪生物，身体呈两侧对称，前端有半月形头部。可能是节肢动物的祖先，但也有学者认为属于独立的灭绝门类。'
+            },
+            {
+                id: 'kimberella',
+                name: '金伯拉虫',
+                period: '5.55-5.41亿年前',
+                startYear: 555,
+                endYear: 541,
+                type: 'marine',
+                lat: 60,
+                lon: 75,
+                icon: '🐌',
+                color: 0xffb74d,
+                size: '3-7厘米',
+                diet: '刮食藻类',
+                habitat: '海底',
+                status: '灭绝',
+                description: '可能是软体动物的祖先，外形像现代的帽贝。它留下了独特的爬行痕迹化石，是最早的动物活动证据之一。'
+            },
+            {
+                id: 'charnia',
+                name: '查恩盘虫',
+                period: '5.70-5.41亿年前',
+                startYear: 570,
+                endYear: 541,
+                type: 'marine',
+                lat: 50,
+                lon: -10,
+                icon: '🌿',
+                color: 0x66bb6a,
+                size: '可达2米',
+                diet: '未知',
+                habitat: '深海',
+                status: '灭绝',
+                description: '最早的复杂多细胞生物之一，外形像羽毛或叶子。它没有口和消化系统，可能是通过身体表面吸收营养。'
+            },
+            {
+                id: 'eukaryotes',
+                name: '真核生物',
+                period: '18-5亿年前',
+                startYear: 1800,
+                endYear: 500,
+                type: 'marine',
+                lat: 0,
+                lon: 60,
+                icon: '🔬',
+                color: 0xe91e63,
+                size: '微观-毫米',
+                diet: '多样',
+                habitat: '海洋',
+                status: '现存',
+                description: '具有细胞核的复杂细胞生物，包括原生生物、藻类、真菌、植物和动物的祖先。真核生物的出现是生命复杂化的关键一步。'
+            },
+            {
+                id: 'red_algae',
+                name: '红藻',
+                period: '12-5亿年前',
+                startYear: 1200,
+                endYear: 500,
+                type: 'marine',
+                lat: 25,
+                lon: -45,
+                icon: '🌿',
+                color: 0xc62828,
+                size: '厘米级',
+                diet: '光合作用',
+                habitat: '浅海',
+                status: '现存',
+                description: '最早的多细胞藻类之一，在元古宙海洋中广泛分布。红藻的光合色素能够利用深海中有限的蓝光。'
             },
             
             // ===== 寒武纪 (5.41-4.85亿年前) =====
@@ -161,6 +333,57 @@ export class CreatureData {
                 status: '灭绝',
                 description: '被认为是人类和所有脊椎动物的最早祖先。它具有原始的脊索，是脊索动物的最早代表。这条小鱼一样的生物改变了生命演化的方向。'
             },
+            {
+                id: 'wiwaxia',
+                name: '威瓦亚虫',
+                period: '5.20-5.05亿年前',
+                startYear: 520,
+                endYear: 505,
+                type: 'marine',
+                lat: 35,
+                lon: 100,
+                icon: '🐛',
+                color: 0xffca28,
+                size: '可达3厘米',
+                diet: '刮食藻类',
+                habitat: '海底',
+                status: '灭绝',
+                description: '身体覆盖着鳞片和尖刺的奇怪生物。它可能是软体动物和环节动物的共同祖先，展示了早期动物的实验性身体构型。'
+            },
+            {
+                id: 'haikouichthys',
+                name: '海口鱼',
+                period: '5.18-5.13亿年前',
+                startYear: 518,
+                endYear: 513,
+                type: 'marine',
+                lat: 22,
+                lon: 102,
+                icon: '🐟',
+                color: 0x81c784,
+                size: '约2厘米',
+                diet: '滤食',
+                habitat: '浅海',
+                status: '灭绝',
+                description: '最早的脊椎动物之一，具有明显的头部和原始脊椎。来自云南澄江生物群，是脊椎动物起源的关键证据。'
+            },
+            {
+                id: 'hallucigenia_2',
+                name: '微网虫',
+                period: '5.20-5.10亿年前',
+                startYear: 520,
+                endYear: 510,
+                type: 'marine',
+                lat: 38,
+                lon: 115,
+                icon: '🐛',
+                color: 0x9e9e9e,
+                size: '约2厘米',
+                diet: '未知',
+                habitat: '海底',
+                status: '灭绝',
+                description: '身体覆盖着六边形鳞片的叶足动物。它展示了早期动物外骨骼的多样性，可能是节肢动物演化中的重要一环。'
+            },
             
             // ===== 奥陶纪 (4.85-4.44亿年前) =====
             {
@@ -214,6 +437,57 @@ export class CreatureData {
                 status: '灭绝',
                 description: '有史以来最大的节肢动物，巨大的海蝎子。它拥有强大的螯肢和尾刺，是奥陶纪海洋的霸主。体型巨大可能与当时高氧环境有关。'
             },
+            {
+                id: 'conodonts',
+                name: '牙形石',
+                period: '4.95-2.01亿年前',
+                startYear: 495,
+                endYear: 201,
+                type: 'marine',
+                lat: 0,
+                lon: 0,
+                icon: '🦷',
+                color: 0xffeb3b,
+                size: '数厘米',
+                diet: '肉食/滤食',
+                habitat: '海洋',
+                status: '灭绝',
+                description: '一类神秘的早期脊椎动物，只留下了牙齿化石。它们实际上是有鳗鱼状身体的鱼类，在奥陶纪海洋中广泛分布。'
+            },
+            {
+                id: 'bryozoans',
+                name: '苔藓动物',
+                period: '4.80-0亿年前',
+                startYear: 480,
+                endYear: 0,
+                type: 'marine',
+                lat: 40,
+                lon: 25,
+                icon: '🪸',
+                color: 0xffccbc,
+                size: '毫米-厘米',
+                diet: '滤食',
+                habitat: '浅海',
+                status: '现存',
+                description: '微小的群居无脊椎动物，形成类似珊瑚的群落。奥陶纪时开始繁盛，是地层定年的重要标准化石。'
+            },
+            {
+                id: 'graptolites',
+                name: '笔石',
+                period: '4.90-3.23亿年前',
+                startYear: 490,
+                endYear: 323,
+                type: 'marine',
+                lat: -20,
+                lon: 45,
+                icon: '🪶',
+                color: 0x3e2723,
+                size: '厘米级',
+                diet: '滤食',
+                habitat: '海洋',
+                status: '灭绝',
+                description: '群居的半索动物，漂浮在海洋中。它们的化石形似书写的笔触，因此得名。笔石是奥陶纪-志留纪重要的标准化石。'
+            },
             
             // ===== 志留纪 (4.44-4.19亿年前) =====
             {
@@ -249,6 +523,57 @@ export class CreatureData {
                 habitat: '浅海',
                 status: '灭绝',
                 description: '最早的具有完整上下颌的鱼类，被认为是现代有颌脊椎动物的祖先。颌的出现是脊椎动物演化史上最重要的创新之一。'
+            },
+            {
+                id: 'rhyniella',
+                name: '莱尼虫',
+                period: '4.10-4.00亿年前',
+                startYear: 410,
+                endYear: 400,
+                type: 'land',
+                lat: 55,
+                lon: -3,
+                icon: '🪳',
+                color: 0x5d4037,
+                size: '毫米级',
+                diet: '植食/腐食',
+                habitat: '陆地',
+                status: '灭绝',
+                description: '最早登陆的六足动物之一，发现于苏格兰莱尼燧石层。它代表了节肢动物从海洋向陆地扩张的重要一步。'
+            },
+            {
+                id: 'sea_scorpions',
+                name: '板足鲎',
+                period: '4.60-2.52亿年前',
+                startYear: 460,
+                endYear: 252,
+                type: 'marine',
+                lat: 20,
+                lon: -85,
+                icon: '🦂',
+                color: 0x8d6e63,
+                size: '10厘米-2.5米',
+                diet: '肉食',
+                habitat: '浅海/河口',
+                status: '灭绝（有后代）',
+                description: '志留纪-石炭纪的海洋霸主，外形介于蝎子和马蹄蟹之间。它们是最早的螯肢动物之一，现代的马蹄蟹是其后代。'
+            },
+            {
+                id: 'euthycarcinoids',
+                name: '宽铠虾',
+                period: '4.40-2.90亿年前',
+                startYear: 440,
+                endYear: 290,
+                type: 'marine',
+                lat: 45,
+                lon: 15,
+                icon: '🦐',
+                color: 0x795548,
+                size: '数厘米-数十厘米',
+                diet: '杂食',
+                habitat: '海陆交界',
+                status: '灭绝',
+                description: '介于节肢动物和脊椎动物之间的神秘生物。它们可能是最早能够离开水体短暂活动的节肢动物之一。'
             },
             
             // ===== 泥盆纪 (4.19-3.59亿年前) =====
@@ -310,8 +635,8 @@ export class CreatureData {
                 startYear: 365,
                 endYear: 360,
                 type: 'land',
-                lat: 20,
-                lon: -60,
+                lat: 60,
+                lon: -45,
                 icon: '🦎',
                 color: 0x4caf50,
                 size: '1-1.5米',
@@ -319,6 +644,40 @@ export class CreatureData {
                 habitat: '水陆交界',
                 status: '灭绝',
                 description: '最早的四足动物之一，具有明显的四肢和指头。虽然能在陆地上移动，但可能主要在水中生活。它是两栖动物的祖先。'
+            },
+            {
+                id: 'bothriolepis',
+                name: '沟鳞鱼',
+                period: '4.00-3.58亿年前',
+                startYear: 400,
+                endYear: 358,
+                type: 'marine',
+                lat: -10,
+                lon: 15,
+                icon: '🐟',
+                color: 0xa1887f,
+                size: '约30厘米',
+                diet: '植食/碎屑',
+                habitat: '淡水/河口',
+                status: '灭绝',
+                description: '最常见的泥盆纪鱼类之一，属于盾皮鱼类。身体覆盖着厚重的骨板，是淡水生态系统的重要组成部分。'
+            },
+            {
+                id: 'cladoselache',
+                name: '裂口鲨',
+                period: '3.80-3.60亿年前',
+                startYear: 380,
+                endYear: 360,
+                type: 'marine',
+                lat: 20,
+                lon: -70,
+                icon: '🦈',
+                color: 0x607d8b,
+                size: '约1米',
+                diet: '肉食',
+                habitat: '海洋',
+                status: '灭绝（有后代）',
+                description: '最早的真正鲨鱼之一，具有流线型的身体和多个鳍。虽然保留了原始的骨板，但已经具备现代鲨鱼的基本形态。'
             },
             
             // ===== 石炭纪 (3.59-2.99亿年前) =====
@@ -363,8 +722,8 @@ export class CreatureData {
                 startYear: 312,
                 endYear: 311,
                 type: 'land',
-                lat: 35,
-                lon: -50,
+                lat: 45,
+                lon: -60,
                 icon: '🦎',
                 color: 0x4caf50,
                 size: '20-30厘米',
@@ -372,6 +731,57 @@ export class CreatureData {
                 habitat: '森林',
                 status: '灭绝',
                 description: '最早的爬行动物之一，产羊膜卵，完全摆脱了对水体的依赖。这标志着脊椎动物真正征服了陆地。'
+            },
+            {
+                id: 'lepidodendron',
+                name: '鳞木',
+                period: '3.59-2.72亿年前',
+                startYear: 359,
+                endYear: 272,
+                type: 'plant',
+                lat: 30,
+                lon: -5,
+                icon: '🌲',
+                color: 0x33691e,
+                size: '可达40米',
+                diet: '光合作用',
+                habitat: '沼泽森林',
+                status: '灭绝',
+                description: '石炭纪的巨型树木，形成广袤的沼泽森林。死后堆积的遗体经过地质作用变成了今天的煤炭。树干表面有鳞片状的纹路。'
+            },
+            {
+                id: 'sigillaria',
+                name: '封印木',
+                period: '3.59-2.72亿年前',
+                startYear: 359,
+                endYear: 272,
+                type: 'plant',
+                lat: 35,
+                lon: 0,
+                icon: '🌴',
+                color: 0x558b2f,
+                size: '可达30米',
+                diet: '光合作用',
+                habitat: '沼泽森林',
+                status: '灭绝',
+                description: '石炭纪的另一种巨型树木，与鳞木一起形成了煤炭森林。树干上有独特的六边形叶痕。'
+            },
+            {
+                id: 'eryops',
+                name: '引螈',
+                period: '3.10-2.80亿年前',
+                startYear: 310,
+                endYear: 280,
+                type: 'land',
+                lat: 38,
+                lon: -95,
+                icon: '🐸',
+                color: 0x66bb6a,
+                size: '1.5-2米',
+                diet: '肉食',
+                habitat: '沼泽/水域',
+                status: '灭绝',
+                description: '大型两栖动物，虽然能在陆地上活动，但仍依赖水体繁殖。它是石炭纪-二叠纪最常见的两栖动物之一。'
             },
             
             // ===== 二叠纪 (2.99-2.52亿年前) =====
@@ -382,7 +792,7 @@ export class CreatureData {
                 startYear: 295,
                 endYear: 270,
                 type: 'land',
-                lat: 30,
+                lat: 35,
                 lon: -100,
                 icon: '🦎',
                 color: 0xff5722,
@@ -399,7 +809,7 @@ export class CreatureData {
                 startYear: 260,
                 endYear: 252,
                 type: 'land',
-                lat: 45,
+                lat: 55,
                 lon: 60,
                 icon: '🐢',
                 color: 0x8bc34a,
@@ -408,6 +818,57 @@ export class CreatureData {
                 habitat: '干旱地区',
                 status: '灭绝',
                 description: '一种大型的副爬行动物，身体覆盖着厚重的骨板。它是二叠纪的大型植食动物，能够防御大多数掠食者。'
+            },
+            {
+                id: 'gorgonopsid',
+                name: '丽齿兽',
+                period: '2.70-2.52亿年前',
+                startYear: 270,
+                endYear: 252,
+                type: 'land',
+                lat: 45,
+                lon: 25,
+                icon: '🐺',
+                color: 0xd32f2f,
+                size: '2-4米',
+                diet: '肉食',
+                habitat: '多种环境',
+                status: '灭绝',
+                description: '二叠纪晚期最可怕的掠食者，属于合弓纲（似哺乳爬行动物）。它拥有类似剑齿虎的巨大犬齿，是当时陆地的霸主。'
+            },
+            {
+                id: 'moschops',
+                name: '麝足兽',
+                period: '2.65-2.60亿年前',
+                startYear: 265,
+                endYear: 260,
+                type: 'land',
+                lat: -30,
+                lon: 25,
+                icon: '🐃',
+                color: 0xa1887f,
+                size: '2.7-5米',
+                diet: '植食',
+                habitat: '平原',
+                status: '灭绝',
+                description: '大型植食性似哺乳爬行动物，头骨厚重，可能用于撞头竞争。它代表了二叠纪陆生动物大型化的趋势。'
+            },
+            {
+                id: 'lystrosaurus',
+                name: '水龙兽',
+                period: '2.55-2.50亿年前',
+                startYear: 255,
+                endYear: 250,
+                type: 'land',
+                lat: -60,
+                lon: 25,
+                icon: '🐗',
+                color: 0x795548,
+                size: '0.6-2.5米',
+                diet: '植食',
+                habitat: '多种环境',
+                status: '灭绝',
+                description: '二叠纪大灭绝后幸存下来的少数动物之一，成为三叠纪早期最丰富的陆生脊椎动物。它的广泛分布为大陆漂移学说提供了证据。'
             },
             
             // ===== 三叠纪 (2.52-2.01亿年前) =====
@@ -418,7 +879,7 @@ export class CreatureData {
                 startYear: 215,
                 endYear: 196,
                 type: 'land',
-                lat: 25,
+                lat: 35,
                 lon: -105,
                 icon: '🦖',
                 color: 0x4caf50,
@@ -435,7 +896,7 @@ export class CreatureData {
                 startYear: 214,
                 endYear: 204,
                 type: 'land',
-                lat: 40,
+                lat: 45,
                 lon: 10,
                 icon: '🦕',
                 color: 0x8bc34a,
@@ -452,7 +913,7 @@ export class CreatureData {
                 startYear: 250,
                 endYear: 90,
                 type: 'marine',
-                lat: 20,
+                lat: 30,
                 lon: 135,
                 icon: '🐬',
                 color: 0x2196f3,
@@ -461,6 +922,74 @@ export class CreatureData {
                 habitat: '海洋',
                 status: '灭绝',
                 description: '鱼龙是爬行动物重返海洋的典范，外形酷似海豚。它们完全适应了海洋生活，是高效的游泳者和捕食者。'
+            },
+            {
+                id: 'nothosaurus',
+                name: '幻龙',
+                period: '2.40-2.10亿年前',
+                startYear: 240,
+                endYear: 210,
+                type: 'marine',
+                lat: 25,
+                lon: 15,
+                icon: '🦎',
+                color: 0x4caf50,
+                size: '可达4米',
+                diet: '肉食',
+                habitat: '浅海/海岸',
+                status: '灭绝（有后代）',
+                description: '三叠纪的海生爬行动物，半水生生活。它们是蛇颈龙和沧龙的祖先，代表了爬行动物重返海洋的尝试。'
+            },
+            {
+                id: 'pterosaur_early',
+                name: '早期翼龙',
+                period: '2.28-2.01亿年前',
+                startYear: 228,
+                endYear: 201,
+                type: 'flying',
+                lat: 40,
+                lon: -5,
+                icon: '🦅',
+                color: 0x00bcd4,
+                size: '翼展可达2米',
+                diet: '昆虫/鱼类',
+                habitat: '海岸/森林',
+                status: '灭绝（有后代）',
+                description: '最早能够飞行的脊椎动物，在三叠纪晚期出现。它们的翅膀由皮肤和肌肉构成，连接延长的第四指。'
+            },
+            {
+                id: 'cynognathus',
+                name: '犬颌兽',
+                period: '2.47-2.37亿年前',
+                startYear: 247,
+                endYear: 237,
+                type: 'land',
+                lat: -35,
+                lon: 25,
+                icon: '🐕',
+                color: 0x8d6e63,
+                size: '可达1米',
+                diet: '肉食',
+                habitat: '多种环境',
+                status: '灭绝',
+                description: '三叠纪的似哺乳爬行动物，具有类似哺乳动物的特征。它的牙齿分化为门齿、犬齿和臼齿，是哺乳动物演化的重要一环。'
+            },
+            {
+                id: 'mastodonsaurus',
+                name: '乳齿螈',
+                period: '2.47-2.01亿年前',
+                startYear: 247,
+                endYear: 201,
+                type: 'land',
+                lat: 50,
+                lon: 10,
+                icon: '🐸',
+                color: 0x5d4037,
+                size: '4-6米',
+                diet: '肉食',
+                habitat: '水域/沼泽',
+                status: '灭绝',
+                description: '三叠纪最大的两栖动物之一，头部巨大，眼睛位于头顶。它几乎完全生活在水中，以鱼类和其他小型动物为食。'
             },
             
             // ===== 侏罗纪 (2.01-1.45亿年前) =====
@@ -471,7 +1000,7 @@ export class CreatureData {
                 startYear: 155,
                 endYear: 145,
                 type: 'land',
-                lat: 35,
+                lat: 38,
                 lon: -110,
                 icon: '🦖',
                 color: 0xf44336,
@@ -488,7 +1017,7 @@ export class CreatureData {
                 startYear: 154,
                 endYear: 153,
                 type: 'land',
-                lat: 40,
+                lat: 42,
                 lon: -105,
                 icon: '🦕',
                 color: 0x8bc34a,
@@ -505,7 +1034,7 @@ export class CreatureData {
                 startYear: 155,
                 endYear: 150,
                 type: 'land',
-                lat: 38,
+                lat: 40,
                 lon: -108,
                 icon: '🦕',
                 color: 0x4caf50,
@@ -522,7 +1051,7 @@ export class CreatureData {
                 startYear: 150,
                 endYear: 148,
                 type: 'flying',
-                lat: 45,
+                lat: 48,
                 lon: 11,
                 icon: '🦅',
                 color: 0xff9800,
@@ -531,6 +1060,74 @@ export class CreatureData {
                 habitat: '森林',
                 status: '灭绝',
                 description: '最著名的过渡化石，兼具恐龙和鸟类的特征。它有羽毛和翅膀，但也保留牙齿和尾骨。是恐龙演化为鸟类的关键证据。'
+            },
+            {
+                id: 'diplodocus',
+                name: '梁龙',
+                period: '1.54-1.52亿年前',
+                startYear: 154,
+                endYear: 152,
+                type: 'land',
+                lat: 40,
+                lon: -112,
+                icon: '🦕',
+                color: 0x9e9e9e,
+                size: '25-35米',
+                diet: '植食',
+                habitat: '森林/平原',
+                status: '灭绝',
+                description: '超长的蜥脚类恐龙，尾巴像鞭子一样长。它的颈部可以水平摆动，取食低矮植被。是侏罗纪常见的长颈恐龙。'
+            },
+            {
+                id: 'liopleurodon',
+                name: '滑齿龙',
+                period: '1.66-1.55亿年前',
+                startYear: 166,
+                endYear: 155,
+                type: 'marine',
+                lat: 52,
+                lon: 0,
+                icon: '🐊',
+                color: 0x1565c0,
+                size: '6-25米',
+                diet: '肉食',
+                habitat: '海洋',
+                status: '灭绝',
+                description: '侏罗纪海洋的顶级掠食者，巨大的上龙类。它的头骨巨大，咬合力惊人，能捕食鱼龙和其他海洋爬行动物。'
+            },
+            {
+                id: 'rhamphorhynchus',
+                name: '喙嘴翼龙',
+                period: '1.50-1.48亿年前',
+                startYear: 150,
+                endYear: 148,
+                type: 'flying',
+                lat: 45,
+                lon: 8,
+                icon: '🦇',
+                color: 0x795548,
+                size: '翼展1.8米',
+                diet: '鱼类/昆虫',
+                habitat: '海岸',
+                status: '灭绝',
+                description: '长尾巴的翼龙，尾部末端有菱形尾鳍。它们是敏捷的飞行者，可能在沿海水域捕食鱼类。'
+            },
+            {
+                id: 'plesiosaurus',
+                name: '蛇颈龙',
+                period: '2.00-1.66亿年前',
+                startYear: 200,
+                endYear: 166,
+                type: 'marine',
+                lat: 50,
+                lon: -2,
+                icon: '🦕',
+                color: 0x4caf50,
+                size: '3-5米',
+                diet: '肉食',
+                habitat: '浅海',
+                status: '灭绝',
+                description: '长颈的海洋爬行动物，具有四只桨状肢。它们优雅地在海洋中游动，捕食鱼类和头足类。是蛇颈龙类的典型代表。'
             },
             
             // ===== 白垩纪 (1.45-6600万年前) =====
@@ -575,7 +1172,7 @@ export class CreatureData {
                 startYear: 75,
                 endYear: 71,
                 type: 'land',
-                lat: 40,
+                lat: 42,
                 lon: 70,
                 icon: '🦖',
                 color: 0xff5722,
@@ -592,7 +1189,7 @@ export class CreatureData {
                 startYear: 88,
                 endYear: 80.5,
                 type: 'flying',
-                lat: 35,
+                lat: 38,
                 lon: -95,
                 icon: '🦅',
                 color: 0x00bcd4,
@@ -609,7 +1206,7 @@ export class CreatureData {
                 startYear: 82,
                 endYear: 66,
                 type: 'marine',
-                lat: 30,
+                lat: 35,
                 lon: -90,
                 icon: '🐊',
                 color: 0x3f51b5,
@@ -620,21 +1217,72 @@ export class CreatureData {
                 description: '白垩纪海洋的顶级掠食者，巨大的海生蜥蜴。它拥有强壮的尾巴和四肢演化成的鳍，统治着白垩纪晚期的海洋。'
             },
             {
-                id: 'tyrannosaurus',
-                name: '霸王龙',
+                id: 'spinosaurus',
+                name: '棘龙',
+                period: '9900-9350万年前',
+                startYear: 99,
+                endYear: 93.5,
+                type: 'land',
+                lat: 25,
+                lon: 30,
+                icon: '🦖',
+                color: 0x5d4037,
+                size: '14-15米',
+                diet: '肉食/鱼类',
+                habitat: '河流/海岸',
+                status: '灭绝',
+                description: '已知最长的肉食恐龙，背上有巨大的帆状结构。它适应半水生生活，以鱼类为主要食物，可能也会捕食其他恐龙。'
+            },
+            {
+                id: 'ankylosaurus',
+                name: '甲龙',
                 period: '6800-6600万年前',
                 startYear: 68,
                 endYear: 66,
                 type: 'land',
-                lat: 45,
-                lon: -100,
-                icon: '🦖',
-                color: 0x795548,
-                size: '12-13米',
-                diet: '肉食',
+                lat: 50,
+                lon: -105,
+                icon: '🐢',
+                color: 0x6d4c41,
+                size: '6-8米',
+                diet: '植食',
                 habitat: '平原',
                 status: '灭绝',
-                description: '白垩纪晚期最大的掠食者，拥有所有陆地动物中最强的咬合力。它那看似滑稽的小短手，其实可能用于抓握猎物。'
+                description: '最完整的装甲恐龙之一，全身覆盖着骨质甲片和尖刺。尾锤是它的武器，可以重创掠食者。'
+            },
+            {
+                id: 'quetzalcoatlus',
+                name: '风神翼龙',
+                period: '6800-6600万年前',
+                startYear: 68,
+                endYear: 66,
+                type: 'flying',
+                lat: 32,
+                lon: -98,
+                icon: '🦅',
+                color: 0x795548,
+                size: '翼展10-11米',
+                diet: '肉食',
+                habitat: '内陆',
+                status: '灭绝',
+                description: '史上最大的飞行动物之一，翼展可达11米。它能够滑翔长距离，是高效的捕食者，可能捕食小型恐龙和其他动物。'
+            },
+            {
+                id: 'ammonite',
+                name: '菊石',
+                period: '4.10-0.66亿年前',
+                startYear: 410,
+                endYear: 66,
+                type: 'marine',
+                lat: 0,
+                lon: 0,
+                icon: '🐚',
+                color: 0xffab91,
+                size: '厘米-2米',
+                diet: '肉食',
+                habitat: '海洋',
+                status: '灭绝',
+                description: '具有旋卷外壳的头足类动物，从泥盆纪一直延续到白垩纪末。它们是重要的标准化石，在白垩纪末大灭绝中消失。'
             },
             
             // ===== 古近纪 (6600-2300万年前) =====
@@ -645,7 +1293,7 @@ export class CreatureData {
                 startYear: 56,
                 endYear: 45,
                 type: 'land',
-                lat: 50,
+                lat: 48,
                 lon: 2,
                 icon: '🐦',
                 color: 0xff9800,
@@ -705,6 +1353,40 @@ export class CreatureData {
                 habitat: '草原/森林',
                 status: '灭绝',
                 description: '史上最大的陆地哺乳动物，体型可与蜥脚类恐龙相比。它没有角，依靠巨大的体型来防御掠食者。'
+            },
+            {
+                id: 'pakicetus',
+                name: '巴基鲸',
+                period: '5000-4800万年前',
+                startYear: 50,
+                endYear: 48,
+                type: 'land',
+                lat: 30,
+                lon: 70,
+                icon: '🐕',
+                color: 0x5d4037,
+                size: '约1-2米',
+                diet: '肉食/鱼类',
+                habitat: '河流/海岸',
+                status: '灭绝',
+                description: '最早的鲸类祖先之一，外形像狼，但已经开始适应水生生活。它的耳朵结构显示它能够在水中听到声音。'
+            },
+            {
+                id: 'andrewsarchus',
+                name: '安氏中兽',
+                period: '4800-4100万年前',
+                startYear: 48,
+                endYear: 41,
+                type: 'land',
+                lat: 45,
+                lon: 110,
+                icon: '🐺',
+                color: 0x4e342e,
+                size: '可达5米',
+                diet: '肉食',
+                habitat: '草原',
+                status: '灭绝',
+                description: '史上最大的陆生食肉哺乳动物，头骨巨大，咬合力惊人。它代表了古近纪哺乳动物掠食者的巅峰。'
             },
             
             // ===== 新近纪 (2300万年-260万年前) =====
@@ -776,6 +1458,57 @@ export class CreatureData {
                 status: '灭绝（有人类后代）',
                 description: '最早的人科动物之一，著名的"露西"就属于这个属。它们已经能够直立行走，但脑容量还很小。是人类演化路上的重要一步。'
             },
+            {
+                id: 'homohabilis',
+                name: '能人',
+                period: '240-140万年前',
+                startYear: 2.4,
+                endYear: 1.4,
+                type: 'land',
+                lat: -3,
+                lon: 35,
+                icon: '🧑',
+                color: 0xd7ccc8,
+                size: '身高1-1.3米',
+                diet: '杂食',
+                habitat: '稀树草原',
+                status: '灭绝（有人类后代）',
+                description: '最早的人属成员，能够制造石器工具。"能人"意为"能干的人"，标志着人类技术能力的开端。'
+            },
+            {
+                id: 'paranthropus',
+                name: '傍人',
+                period: '270-120万年前',
+                startYear: 2.7,
+                endYear: 1.2,
+                type: 'land',
+                lat: -25,
+                lon: 28,
+                icon: '🦍',
+                color: 0x5d4037,
+                size: '身高1.3-1.4米',
+                diet: '植食',
+                habitat: '稀树草原',
+                status: '灭绝',
+                description: '人科中的一个旁支，拥有巨大的颌骨和咀嚼肌，适应坚硬的植物性食物。它们与人类祖先分道扬镳，最终灭绝。'
+            },
+            {
+                id: 'deinotherium',
+                name: '恐象',
+                period: '2300-780万年前',
+                startYear: 23,
+                endYear: 7.8,
+                type: 'land',
+                lat: 10,
+                lon: 40,
+                icon: '🐘',
+                color: 0x795548,
+                size: '肩高3.5-4米',
+                diet: '植食',
+                habitat: '森林/草原',
+                status: '灭绝',
+                description: '长鼻目动物，下颌有两根向下弯曲的象牙。它的长鼻可能用于卷取树叶和草。是中新世-上新世的重要植食动物。'
+            },
             
             // ===== 第四纪 (260万年前-现在) =====
             {
@@ -797,7 +1530,7 @@ export class CreatureData {
             },
             {
                 id: 'saber_toothed_cat',
-                name: '刃齿虎',
+                name: '致命刃齿虎',
                 period: '250万年前-1万年前',
                 startYear: 2.5,
                 endYear: 0.01,
@@ -806,11 +1539,11 @@ export class CreatureData {
                 lon: -120,
                 icon: '🐅',
                 color: 0xff5722,
-                size: '可达880公斤',
+                size: '可达400公斤',
                 diet: '肉食',
                 habitat: '多种环境',
                 status: '灭绝',
-                description: '著名的剑齿猫科动物，拥有超长的上犬齿。它用强壮的前肢制服猎物，然后用利齿给予致命一击。'
+                description: '北美洲的剑齿猫科动物，拥有超长的上犬齿。它专门捕食大型植食动物，在更新世末大灭绝中消失。'
             },
             {
                 id: 'ground_sloth',
@@ -828,8 +1561,131 @@ export class CreatureData {
                 habitat: '森林/草原',
                 status: '灭绝',
                 description: '巨大的地懒，体型可与大象相比。它能够用后足站立取食高处的树叶，是最大的陆生树懒。'
+            },
+            {
+                id: 'woolly_rhino',
+                name: '披毛犀',
+                period: '35万年前-1万年前',
+                startYear: 0.35,
+                endYear: 0.01,
+                type: 'land',
+                lat: 55,
+                lon: 60,
+                icon: '🦏',
+                color: 0x795548,
+                size: '可达2吨',
+                diet: '植食',
+                habitat: '苔原/草原',
+                status: '灭绝',
+                description: '适应寒冷气候的犀牛，身披厚毛。著名的"猛犸犀"洞穴壁画描绘的就是它们。与猛犸象一样在末次冰期结束时灭绝。'
+            },
+            {
+                id: 'cave_lion',
+                name: '洞狮',
+                period: '30万年前-1.3万年前',
+                startYear: 0.3,
+                endYear: 0.013,
+                type: 'land',
+                lat: 48,
+                lon: 12,
+                icon: '🦁',
+                color: 0xffd54f,
+                size: '可达300公斤',
+                diet: '肉食',
+                habitat: '苔原/草原',
+                status: '灭绝',
+                description: '比现代狮子更大的冰河时代掠食者，适应寒冷环境。它们可能是史前人类洞穴壁画的主题。'
+            },
+            {
+                id: 'irish_elk',
+                name: '大角鹿',
+                period: '40万年前-7700年前',
+                startYear: 0.4,
+                endYear: 0.0077,
+                type: 'land',
+                lat: 53,
+                lon: -8,
+                icon: '🦌',
+                color: 0x8d6e63,
+                size: '肩高2.1米',
+                diet: '植食',
+                habitat: '苔原/草原',
+                status: '灭绝',
+                description: '拥有巨大鹿角的鹿，角展可达3.6米。虽然名为"爱尔兰"，但分布遍及欧亚大陆。是人类猎捕和环境变化的受害者。'
+            },
+            {
+                id: 'dire_wolf',
+                name: '恐狼',
+                period: '12.5万年前-9500年前',
+                startYear: 0.125,
+                endYear: 0.0095,
+                type: 'land',
+                lat: 35,
+                lon: -110,
+                icon: '🐺',
+                color: 0x616161,
+                size: '可达68公斤',
+                diet: '肉食',
+                habitat: '多种环境',
+                status: '灭绝',
+                description: '比现代灰狼更大更重的掠食者，强大的咬合力适合碎骨。著名的拉布雷亚沥青坑保存了大量恐狼化石。'
+            },
+            {
+                id: 'homo_erectus',
+                name: '直立人',
+                period: '190-14万年前',
+                startYear: 1.9,
+                endYear: 0.14,
+                type: 'land',
+                lat: -7,
+                lon: 110,
+                icon: '🧑',
+                color: 0xbcaaa4,
+                size: '身高1.5-1.8米',
+                diet: '肉食/杂食',
+                habitat: '多种环境',
+                status: '灭绝（有人类后代）',
+                description: '第一个完全直立行走的人属成员，第一个走出非洲的人类祖先。他们使用阿舍利手斧，可能已会用火。北京猿人就属于直立人。'
+            },
+            {
+                id: 'cave_bear',
+                name: '洞熊',
+                period: '25-2.4万年前',
+                startYear: 0.25,
+                endYear: 0.024,
+                type: 'land',
+                lat: 46,
+                lon: 10,
+                icon: '🐻',
+                color: 0x5d4037,
+                size: '可达1吨',
+                diet: '杂食',
+                habitat: '洞穴/森林',
+                status: '灭绝',
+                description: '比现代棕熊更大的熊类，在冰河时代的欧洲广泛分布。它们与尼安德特人和早期现代人共享洞穴。'
             }
         ];
+        
+        // 生物分类数据
+        this.taxonomy = {
+            '蓝藻': { domain: '细菌域', phylum: '蓝藻门', class: '-', order: '色球藻目' },
+            '三叶虫': { domain: '真核域', phylum: '节肢动物门', class: '三叶虫纲', order: '多种目' },
+            '奇虾': { domain: '真核域', phylum: '节肢动物门', class: '恐虾纲', order: '放射齿目' },
+            '皮卡虫': { domain: '真核域', phylum: '脊索动物门', class: '头索纲', order: '-' },
+            '海口鱼': { domain: '真核域', phylum: '脊椎动物门', class: '无颌纲', order: '昆明鱼目' },
+            '邓氏鱼': { domain: '真核域', phylum: '脊椎动物门', class: '盾皮鱼纲', order: '节颈鱼目' },
+            '腔骨龙': { domain: '真核域', phylum: '脊索动物门', class: '蜥形纲', order: '兽脚亚目' },
+            '霸王龙': { domain: '真核域', phylum: '脊索动物门', class: '蜥形纲', order: '兽脚亚目' },
+            '三角龙': { domain: '真核域', phylum: '脊索动物门', class: '蜥形纲', order: '角龙下目' },
+            '始祖鸟': { domain: '真核域', phylum: '脊索动物门', class: '蜥形纲', order: '始祖鸟目' },
+            '鱼龙': { domain: '真核域', phylum: '脊索动物门', class: '双孔亚纲', order: '鱼龙目' },
+            '沧龙': { domain: '真核域', phylum: '脊索动物门', class: '双孔亚纲', order: '有鳞目' },
+            '龙王鲸': { domain: '真核域', phylum: '脊索动物门', class: '哺乳纲', order: '鲸偶蹄目' },
+            '猛犸象': { domain: '真核域', phylum: '脊索动物门', class: '哺乳纲', order: '长鼻目' },
+            '剑齿虎': { domain: '真核域', phylum: '脊索动物门', class: '哺乳纲', order: '食肉目' },
+            '南方古猿': { domain: '真核域', phylum: '脊索动物门', class: '哺乳纲', order: '灵长目' },
+            '尼安德特人': { domain: '真核域', phylum: '脊索动物门', class: '哺乳纲', order: '灵长目' }
+        };
     }
     
     // 获取指定年代存在的生物
@@ -863,6 +1719,11 @@ export class CreatureData {
         return this.creatures;
     }
     
+    // 获取生物总数
+    getCreatureCount() {
+        return this.creatures.length;
+    }
+    
     // 获取生物类型统计
     getTypeStats() {
         const stats = {};
@@ -870,5 +1731,36 @@ export class CreatureData {
             stats[c.type] = (stats[c.type] || 0) + 1;
         });
         return stats;
+    }
+    
+    // 获取年代统计
+    getEraStats() {
+        const eras = [
+            { name: '冥古宙', start: 4600, end: 4000 },
+            { name: '太古宙', start: 4000, end: 2500 },
+            { name: '元古宙', start: 2500, end: 541 },
+            { name: '古生代', start: 541, end: 252 },
+            { name: '中生代', start: 252, end: 66 },
+            { name: '新生代', start: 66, end: 0 }
+        ];
+        
+        return eras.map(era => ({
+            ...era,
+            count: this.creatures.filter(c => 
+                c.startYear >= era.end && c.endYear <= era.start
+            ).length
+        }));
+    }
+    
+    // 获取生物分类信息
+    getTaxonomy(creatureName) {
+        return this.taxonomy[creatureName] || null;
+    }
+    
+    // 获取相关生物（同类型或同年代）
+    getRelatedCreatures(creature, limit = 3) {
+        return this.creatures
+            .filter(c => c.id !== creature.id && c.type === creature.type)
+            .slice(0, limit);
     }
 }
