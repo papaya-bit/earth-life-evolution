@@ -465,6 +465,11 @@ export class EventData {
         );
     }
     
+    // 根据ID获取事件
+    getEventById(id) {
+        return this.events.find(e => e.id === id);
+    }
+    
     // 获取事件统计
     getEventStats() {
         const stats = {};

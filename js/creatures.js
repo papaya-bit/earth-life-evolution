@@ -1763,4 +1763,42 @@ export class CreatureData {
             .filter(c => c.id !== creature.id && c.type === creature.type)
             .slice(0, limit);
     }
+    
+    // 搜索生物
+    searchCreatures(query, filterType = 'all') {
+        if (!query && filterType === 'all') {
+            return [];
+        }
+        
+        return this.creatures.filter(c => {
+            // 类型筛选
+            if (filterType !== 'all') {
+                if (filterType === 'dinosaur' && c.type !== 'dinosaur') return false;
+                if (filterType === 'marine' && c.type !== 'marine') return false;
+                if (filterType === 'land' && c.type !== 'land' && c.type !== 'mammal' && c.type !== 'reptile') return false;
+                if (filterType === 'mammal' && c.type !== 'mammal') return false;
+            }
+            
+            // 文本搜索
+            if (!query) return true;
+            
+            const searchFields = [
+                c.name,
+                c.description,
+                c.period,
+                c.habitat,
+                c.diet,
+                c.type
+            ];
+            
+            return searchFields.some(field => 
+                field && field.toLowerCase().includes(query)
+            );
+        });
+    }
+    
+    // 根据ID获取生物
+    getCreatureById(id) {
+        return this.creatures.find(c => c.id === id);
+    }
 }
