@@ -1,71 +1,29 @@
-// ===== 地球 3D 模型 - 太空级真实感版本 =====
+// ===== 地球 3D 模型 - 极致真实感版本 =====
+// 参考: NASA视觉标准 / SpaceX轨道镜头 / Blue Marble项目
+
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 // 年代颜色配置
 const ERA_COLORS = {
-    hadean: {
-        ocean: 0x1a0f0f,
-        land: 0xff4500,
-        atmosphere: 0xff2200,
-        hasLava: true,
-        cloudOpacity: 0
-    },
-    archean: {
-        ocean: 0x0a3a5c,
-        land: 0x4a3728,
-        atmosphere: 0x4a90a4,
-        hasLava: false,
-        cloudOpacity: 0.1
-    },
-    proterozoic: {
-        ocean: 0x0d4a7c,
-        land: 0x5a4a3a,
-        atmosphere: 0x4fc3f7,
-        hasLava: false,
-        cloudOpacity: 0.2
-    },
-    paleozoic: {
-        ocean: 0x1565c0,
-        land: 0x6b8e4e,
-        atmosphere: 0x87ceeb,
-        hasLava: false,
-        cloudOpacity: 0.3
-    },
-    mesozoic: {
-        ocean: 0x1976d2,
-        land: 0x7cb342,
-        atmosphere: 0x87ceeb,
-        hasLava: false,
-        cloudOpacity: 0.35
-    },
-    cenozoic: {
-        ocean: 0x1e88e5,
-        land: 0x8bc34a,
-        atmosphere: 0x87ceeb,
-        hasLava: false,
-        cloudOpacity: 0.4
-    },
-    future: {
-        ocean: 0x0d5a9c,
-        land: 0x9e8b6a,
-        atmosphere: 0xffaa44,
-        hasLava: false,
-        cloudOpacity: 0.2
-    }
+    hadean: { ocean: 0x1a0f0f, land: 0xff4500, atmosphere: 0xff2200, hasLava: true, cloudOpacity: 0 },
+    archean: { ocean: 0x0a3a5c, land: 0x4a3728, atmosphere: 0x4a90a4, hasLava: false, cloudOpacity: 0.1 },
+    proterozoic: { ocean: 0x0d4a7c, land: 0x5a4a3a, atmosphere: 0x4fc3f7, hasLava: false, cloudOpacity: 0.2 },
+    paleozoic: { ocean: 0x1565c0, land: 0x6b8e4e, atmosphere: 0x87ceeb, hasLava: false, cloudOpacity: 0.3 },
+    mesozoic: { ocean: 0x1976d2, land: 0x7cb342, atmosphere: 0x87ceeb, hasLava: false, cloudOpacity: 0.35 },
+    cenozoic: { ocean: 0x1e88e5, land: 0x8bc34a, atmosphere: 0x87ceeb, hasLava: false, cloudOpacity: 0.4 },
+    future: { ocean: 0x0d5a9c, land: 0x9e8b6a, atmosphere: 0xffaa44, hasLava: false, cloudOpacity: 0.2 }
 };
 
-// 纹理加载器
 const textureLoader = new THREE.TextureLoader();
 
-// NASA 及高质量纹理资源路径
 const TEXTURE_URLS = {
-    // 8K 地球纹理 (来自 github.com/mrdoob/three.js/dev/examples/textures/planets)
     earthDay: 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/earth_atmos_2048.jpg',
     earthNight: 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/earth_night_2048.jpg',
     earthNormal: 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/earth_normal_2048.jpg',
     earthSpecular: 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/earth_specular_2048.jpg',
     clouds: 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/earth_clouds_1024.png',
+    moon: 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/moon_1024.jpg',
 };
 
 export class Earth {
@@ -75,16 +33,24 @@ export class Earth {
         this.camera = null;
         this.renderer = null;
         this.controls = null;
+        this.earthGroup = null;
         this.earth = null;
         this.atmosphere = null;
         this.clouds = null;
         this.nightLights = null;
-        this.markers = [];
+        this.moon = null;
         this.stars = null;
+        this.milkyWay = null;
+        this.aurora = null;
+        
         this.currentYear = 4600;
         this.clock = new THREE.Clock();
         this.texturesLoaded = false;
-        this.isRealisticMode = false; // 是否使用真实纹理模式
+        this.isRealisticMode = false;
+        
+        this.earthTilt = 23.5 * Math.PI / 180;
+        this.sunPosition = new THREE.Vector3(100, 40, 100);
+        this.time = 0;
     }
     
     async init() {
@@ -92,31 +58,30 @@ export class Earth {
         this.initCamera();
         this.initRenderer();
         this.initLights();
+        this.initMilkyWay();
         this.initStars();
         await this.initEarth();
+        this.initMoon();
         this.initControls();
         this.initEventListeners();
-        
-        // 初始设置为现代地球（真实纹理模式）
         this.updateForEra(0);
     }
     
     initScene() {
         this.scene = new THREE.Scene();
-        // 使用纯黑色背景，让地球更突出
-        this.scene.background = new THREE.Color(0x020204);
+        this.scene.background = new THREE.Color(0x000000);
     }
     
     initCamera() {
         const width = this.container.clientWidth;
         const height = this.container.clientHeight;
-        this.camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-        this.camera.position.set(0, 0, 28);
+        this.camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 5000);
+        this.camera.position.set(0, 15, 35);
     }
     
     initRenderer() {
-        this.renderer = new THREE.WebGLRenderer({ 
-            antialias: true, 
+        this.renderer = new THREE.WebGLRenderer({
+            antialias: true,
             alpha: true,
             powerPreference: "high-performance"
         });
@@ -125,88 +90,65 @@ export class Earth {
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        this.renderer.toneMappingExposure = 1.0;
+        this.renderer.toneMappingExposure = 1.2;
         this.container.appendChild(this.renderer.domElement);
     }
     
     initLights() {
-        // 环境光 - 模拟星空微弱照明
-        const ambientLight = new THREE.AmbientLight(0x404040, 0.1);
+        const ambientLight = new THREE.AmbientLight(0x404040, 0.05);
         this.scene.add(ambientLight);
         
-        // 主光源 - 太阳光
-        this.sunLight = new THREE.DirectionalLight(0xffffff, 2.0);
-        this.sunLight.position.set(50, 30, 50);
+        this.sunLight = new THREE.DirectionalLight(0xffffff, 3.0);
+        this.sunLight.position.copy(this.sunPosition);
         this.sunLight.castShadow = true;
-        this.sunLight.shadow.mapSize.width = 2048;
-        this.sunLight.shadow.mapSize.height = 2048;
+        this.sunLight.shadow.mapSize.width = 4096;
+        this.sunLight.shadow.mapSize.height = 4096;
+        this.sunLight.shadow.camera.near = 0.5;
+        this.sunLight.shadow.camera.far = 500;
+        this.sunLight.shadow.camera.left = -50;
+        this.sunLight.shadow.camera.right = 50;
+        this.sunLight.shadow.camera.top = 50;
+        this.sunLight.shadow.camera.bottom = -50;
         this.scene.add(this.sunLight);
         
-        // 补光 - 地球反射光（模拟月球反射）
-        const fillLight = new THREE.DirectionalLight(0x1a3a5c, 0.3);
-        fillLight.position.set(-30, 0, -30);
-        this.scene.add(fillLight);
-        
-        // 边缘光 - 突出大气层
-        const rimLight = new THREE.DirectionalLight(0x87ceeb, 0.5);
-        rimLight.position.set(0, 50, 0);
-        this.scene.add(rimLight);
+        const earthShine = new THREE.DirectionalLight(0x1a3a5c, 0.4);
+        earthShine.position.set(-30, -10, -30);
+        this.scene.add(earthShine);
     }
     
-    initStars() {
-        // 创建更真实的星空背景
-        const starGeometry = new THREE.BufferGeometry();
-        const starCount = 8000;
-        const positions = new Float32Array(starCount * 3);
-        const colors = new Float32Array(starCount * 3);
-        const sizes = new Float32Array(starCount);
+    // ===== 银河系背景 =====
+    initMilkyWay() {
+        const particleCount = 20000;
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+        const colors = new Float32Array(particleCount * 3);
+        const sizes = new Float32Array(particleCount);
         
-        for (let i = 0; i < starCount; i++) {
+        for (let i = 0; i < particleCount; i++) {
             const i3 = i * 3;
-            const radius = 100 + Math.random() * 200;
-            const theta = Math.random() * Math.PI * 2;
-            const phi = Math.acos(2 * Math.random() - 1);
+            const arm = Math.floor(Math.random() * 4);
+            const armOffset = arm * Math.PI * 0.5;
+            const radius = 300 + Math.random() * 600;
+            const spiralAngle = radius * 0.015 + armOffset + (Math.random() - 0.5) * 0.8;
             
-            positions[i3] = radius * Math.sin(phi) * Math.cos(theta);
-            positions[i3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
-            positions[i3 + 2] = radius * Math.cos(phi);
+            positions[i3] = Math.cos(spiralAngle) * radius;
+            positions[i3 + 1] = (Math.random() - 0.5) * radius * 0.15;
+            positions[i3 + 2] = Math.sin(spiralAngle) * radius;
             
-            // 星星颜色变化（蓝白、白、微黄、微红）
-            const starType = Math.random();
-            if (starType < 0.7) {
-                // 白色
-                colors[i3] = 0.9 + Math.random() * 0.1;
-                colors[i3 + 1] = 0.9 + Math.random() * 0.1;
-                colors[i3 + 2] = 1.0;
-            } else if (starType < 0.85) {
-                // 蓝色
-                colors[i3] = 0.7;
-                colors[i3 + 1] = 0.8;
-                colors[i3 + 2] = 1.0;
-            } else if (starType < 0.95) {
-                // 黄色
-                colors[i3] = 1.0;
-                colors[i3 + 1] = 0.9;
-                colors[i3 + 2] = 0.7;
-            } else {
-                // 红色
-                colors[i3] = 1.0;
-                colors[i3 + 1] = 0.6;
-                colors[i3 + 2] = 0.5;
-            }
+            const intensity = 0.5 + Math.random() * 0.5;
+            colors[i3] = 0.8 * intensity;
+            colors[i3 + 1] = 0.9 * intensity;
+            colors[i3 + 2] = 1.0 * intensity;
             
-            sizes[i] = 0.5 + Math.random() * 1.5;
+            sizes[i] = 1 + Math.random() * 3;
         }
         
-        starGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        starGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-        starGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
         
-        // 使用着色器材质实现闪烁效果
-        const starMaterial = new THREE.ShaderMaterial({
-            uniforms: {
-                time: { value: 0 }
-            },
+        const material = new THREE.ShaderMaterial({
+            uniforms: { time: { value: 0 } },
             vertexShader: `
                 attribute float size;
                 varying vec3 vColor;
@@ -214,7 +156,81 @@ export class Earth {
                 void main() {
                     vColor = color;
                     vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+                    float pulse = 0.8 + 0.2 * sin(time * 0.3 + position.x * 0.01);
+                    gl_PointSize = size * pulse * (500.0 / -mvPosition.z);
+                    gl_Position = projectionMatrix * mvPosition;
+                }
+            `,
+            fragmentShader: `
+                varying vec3 vColor;
+                void main() {
+                    float dist = length(gl_PointCoord - vec2(0.5));
+                    float alpha = smoothstep(0.5, 0.0, dist);
+                    gl_FragColor = vec4(vColor, alpha * 0.6);
+                }
+            `,
+            transparent: true,
+            vertexColors: true,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
+        
+        this.milkyWay = new THREE.Points(geometry, material);
+        this.scene.add(this.milkyWay);
+    }
+    
+    // ===== 增强星空 =====
+    initStars() {
+        const starCount = 30000;
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(starCount * 3);
+        const colors = new Float32Array(starCount * 3);
+        const sizes = new Float32Array(starCount);
+        
+        for (let i = 0; i < starCount; i++) {
+            const i3 = i * 3;
+            const radius = 400 + Math.random() * 1000;
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos(2 * Math.random() - 1);
+            
+            positions[i3] = radius * Math.sin(phi) * Math.cos(theta);
+            positions[i3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+            positions[i3 + 2] = radius * Math.cos(phi);
+            
+            const starType = Math.random();
+            if (starType < 0.001) {
+                colors[i3] = 0.5; colors[i3 + 1] = 0.7; colors[i3 + 2] = 1.0;
+            } else if (starType < 0.01) {
+                colors[i3] = 0.7; colors[i3 + 1] = 0.8; colors[i3 + 2] = 1.0;
+            } else if (starType < 0.05) {
+                colors[i3] = 0.95; colors[i3 + 1] = 0.95; colors[i3 + 2] = 1.0;
+            } else if (starType < 0.15) {
+                colors[i3] = 1.0; colors[i3 + 1] = 0.98; colors[i3 + 2] = 0.95;
+            } else if (starType < 0.4) {
+                colors[i3] = 1.0; colors[i3 + 1] = 0.95; colors[i3 + 2] = 0.8;
+            } else if (starType < 0.7) {
+                colors[i3] = 1.0; colors[i3 + 1] = 0.8; colors[i3 + 2] = 0.6;
+            } else {
+                colors[i3] = 1.0; colors[i3 + 1] = 0.6; colors[i3 + 2] = 0.4;
+            }
+            
+            sizes[i] = 0.5 + Math.random() * 2;
+        }
+        
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+        
+        const material = new THREE.ShaderMaterial({
+            uniforms: { time: { value: 0 } },
+            vertexShader: `
+                attribute float size;
+                varying vec3 vColor;
+                uniform float time;
+                void main() {
+                    vColor = color;
                     float twinkle = 0.8 + 0.2 * sin(time * 2.0 + position.x * 0.1);
+                    vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
                     gl_PointSize = size * twinkle * (300.0 / -mvPosition.z);
                     gl_Position = projectionMatrix * mvPosition;
                 }
@@ -233,33 +249,31 @@ export class Earth {
             depthWrite: false
         });
         
-        this.stars = new THREE.Points(starGeometry, starMaterial);
+        this.stars = new THREE.Points(geometry, material);
         this.scene.add(this.stars);
     }
     
+    // ===== 地球系统 =====
     async initEarth() {
         this.earthGroup = new THREE.Group();
         
-        // 加载真实纹理
         try {
             await this.loadRealisticTextures();
         } catch (e) {
-            console.warn('Failed to load realistic textures, using procedural fallback:', e);
             this.createProceduralTextures();
         }
         
-        // 地球几何体 - 使用高细分度
-        const earthGeometry = new THREE.SphereGeometry(10, 256, 256);
+        const earthGeometry = new THREE.SphereGeometry(10, 512, 512);
         
-        // 地球材质 - 物理渲染
-        this.earthMaterial = new THREE.MeshStandardMaterial({
+        this.earthMaterial = new THREE.MeshPhysicalMaterial({
             map: this.textures.day,
             normalMap: this.textures.normal,
-            normalScale: new THREE.Vector2(0.15, 0.15),
+            normalScale: new THREE.Vector2(0.2, 0.2),
             roughnessMap: this.textures.specular,
-            roughness: 0.8,
-            metalness: 0.1,
-            metalnessMap: this.textures.specular,
+            roughness: 0.6,
+            metalness: 0.0,
+            clearcoat: 0.1,
+            clearcoatRoughness: 0.4
         });
         
         this.earth = new THREE.Mesh(earthGeometry, this.earthMaterial);
@@ -267,33 +281,20 @@ export class Earth {
         this.earth.receiveShadow = true;
         this.earthGroup.add(this.earth);
         
-        // 夜晚城市灯光层
-        if (this.textures.night) {
-            const nightMaterial = new THREE.MeshBasicMaterial({
-                map: this.textures.night,
-                blending: THREE.AdditiveBlending,
-                transparent: true,
-                opacity: 0.8
-            });
-            this.nightLights = new THREE.Mesh(earthGeometry, nightMaterial);
-            this.earthGroup.add(this.nightLights);
-        }
+        this.earthGroup.rotation.z = this.earthTilt;
         
-        // 云层
-        this.createClouds();
-        
-        // 大气层光晕
-        this.createAtmosphere();
+        this.createNightLights();
+        this.createAdvancedClouds();
+        this.createAdvancedAtmosphere();
+        this.createAurora();
         
         this.scene.add(this.earthGroup);
     }
     
     async loadRealisticTextures() {
-        const loadTexture = (url) => {
-            return new Promise((resolve, reject) => {
-                textureLoader.load(url, resolve, undefined, reject);
-            });
-        };
+        const loadTexture = (url) => new Promise((resolve, reject) => {
+            textureLoader.load(url, resolve, undefined, reject);
+        });
         
         const [day, night, normal, specular, clouds] = await Promise.all([
             loadTexture(TEXTURE_URLS.earthDay),
@@ -303,10 +304,9 @@ export class Earth {
             loadTexture(TEXTURE_URLS.clouds)
         ]);
         
-        // 设置纹理参数
         [day, night, normal, specular, clouds].forEach(tex => {
             tex.colorSpace = THREE.SRGBColorSpace;
-            tex.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
+            tex.anisotropy = 16;
         });
         
         this.textures = { day, night, normal, specular, clouds };
@@ -315,357 +315,323 @@ export class Earth {
     }
     
     createProceduralTextures() {
-        // 当无法加载外部纹理时的降级方案
         this.textures = {};
-        
-        // 创建程序化的白天纹理
         const canvas = document.createElement('canvas');
         canvas.width = 2048;
         canvas.height = 1024;
         const ctx = canvas.getContext('2d');
         
-        // 绘制简化但相对真实的地球
         this.drawProceduralEarth(ctx, canvas.width, canvas.height);
-        
         this.textures.day = new THREE.CanvasTexture(canvas);
         this.textures.day.colorSpace = THREE.SRGBColorSpace;
         
-        // 创建法线贴图
         const normalCanvas = document.createElement('canvas');
-        normalCanvas.width = 1024;
-        normalCanvas.height = 512;
-        const normalCtx = normalCanvas.getContext('2d');
-        normalCtx.fillStyle = '#8080ff';
-        normalCtx.fillRect(0, 0, 1024, 512);
+        normalCanvas.width = 1024; normalCanvas.height = 512;
+        const nctx = normalCanvas.getContext('2d');
+        nctx.fillStyle = '#8080ff'; nctx.fillRect(0, 0, 1024, 512);
         this.textures.normal = new THREE.CanvasTexture(normalCanvas);
         
-        // 创建镜面贴图
         const specCanvas = document.createElement('canvas');
-        specCanvas.width = 1024;
-        specCanvas.height = 512;
-        const specCtx = specCanvas.getContext('2d');
-        specCtx.fillStyle = '#666666';
-        specCtx.fillRect(0, 0, 1024, 512);
-        // 海洋区域更反光
-        specCtx.fillStyle = '#ffffff';
-        specCtx.fillRect(0, 300, 1024, 200);
+        specCanvas.width = 1024; specCanvas.height = 512;
+        const sctx = specCanvas.getContext('2d');
+        sctx.fillStyle = '#666666'; sctx.fillRect(0, 0, 1024, 512);
+        sctx.fillStyle = '#ffffff'; sctx.fillRect(0, 300, 1024, 200);
         this.textures.specular = new THREE.CanvasTexture(specCanvas);
         
-        // 创建云层纹理
         this.textures.clouds = this.createProceduralClouds();
-        
         this.texturesLoaded = true;
         this.isRealisticMode = false;
     }
     
-    drawProceduralEarth(ctx, width, height) {
-        // 海洋背景 - 使用渐变更真实的蓝色
-        const oceanGrad = ctx.createLinearGradient(0, 0, 0, height);
-        oceanGrad.addColorStop(0, '#1a3a5c');
-        oceanGrad.addColorStop(0.3, '#0d5a9c');
-        oceanGrad.addColorStop(0.5, '#0d4a8c');
-        oceanGrad.addColorStop(0.7, '#0d5a9c');
-        oceanGrad.addColorStop(1, '#1a3a5c');
-        ctx.fillStyle = oceanGrad;
-        ctx.fillRect(0, 0, width, height);
-        
-        // 添加海洋纹理（波浪感）
-        for (let i = 0; i < 500; i++) {
-            const x = Math.random() * width;
-            const y = Math.random() * height;
-            const size = 20 + Math.random() * 80;
-            const alpha = 0.02 + Math.random() * 0.04;
-            
-            const grad = ctx.createRadialGradient(x, y, 0, x, y, size);
-            grad.addColorStop(0, `rgba(100, 150, 200, ${alpha})`);
-            grad.addColorStop(1, `rgba(100, 150, 200, 0)`);
-            
-            ctx.fillStyle = grad;
-            ctx.beginPath();
-            ctx.arc(x, y, size, 0, Math.PI * 2);
-            ctx.fill();
+    createNightLights() {
+        if (!this.textures.night) {
+            this.textures.night = this.createCityLightsTexture();
         }
         
-        // 绘制大陆 - 使用更真实的形状
-        const continents = [
-            { name: 'north_america', x: 0.20, y: 0.32, size: 0.18 },
-            { name: 'south_america', x: 0.29, y: 0.65, size: 0.12 },
-            { name: 'eurasia', x: 0.58, y: 0.28, size: 0.28 },
-            { name: 'africa', x: 0.53, y: 0.55, size: 0.15 },
-            { name: 'australia', x: 0.80, y: 0.70, size: 0.10 },
-            { name: 'antarctica', x: 0.50, y: 0.92, size: 0.20 }
+        const nightMaterial = new THREE.MeshBasicMaterial({
+            map: this.textures.night,
+            blending: THREE.AdditiveBlending,
+            transparent: true,
+            opacity: 0
+        });
+        
+        const nightGeometry = new THREE.SphereGeometry(10.01, 256, 256);
+        this.nightLights = new THREE.Mesh(nightGeometry, nightMaterial);
+        this.earthGroup.add(this.nightLights);
+    }
+    
+    createCityLightsTexture() {
+        const canvas = document.createElement('canvas');
+        canvas.width = 2048; canvas.height = 1024;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        const cities = [
+            {x: 0.22, y: 0.32, r: 30}, {x: 0.15, y: 0.25, r: 25},
+            {x: 0.30, y: 0.65, r: 25}, {x: 0.52, y: 0.25, r: 30},
+            {x: 0.56, y: 0.30, r: 35}, {x: 0.65, y: 0.32, r: 40},
+            {x: 0.70, y: 0.30, r: 35}, {x: 0.80, y: 0.70, r: 15}
         ];
         
-        continents.forEach(cont => {
-            this.drawDetailedContinent(ctx, width, height, cont);
-        });
-    }
-    
-    drawDetailedContinent(ctx, width, height, cont) {
-        const cx = cont.x * width;
-        const cy = cont.y * height;
-        const size = cont.size * Math.min(width, height);
-        
-        // 根据纬度调整颜色（温度带）
-        const latitude = (cont.y - 0.5) * 2;
-        const isTropical = Math.abs(latitude) < 0.3;
-        const isTemperate = Math.abs(latitude) < 0.6;
-        
-        // 基础陆地色
-        let baseColor, midColor, edgeColor;
-        if (isTropical) {
-            baseColor = '#2d5016';
-            midColor = '#3a6b1a';
-            edgeColor = '#4a7a25';
-        } else if (isTemperate) {
-            baseColor = '#4a5d23';
-            midColor = '#5a7a30';
-            edgeColor = '#6a8a40';
-        } else {
-            baseColor = '#6a5a3a';
-            midColor = '#7a6a4a';
-            edgeColor = '#8a7a5a';
-        }
-        
-        // 绘制大陆主体
-        const landGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, size);
-        landGrad.addColorStop(0, midColor);
-        landGrad.addColorStop(0.6, midColor);
-        landGrad.addColorStop(1, edgeColor);
-        
-        ctx.fillStyle = landGrad;
-        ctx.beginPath();
-        
-        // 使用噪声函数创建不规则海岸线
-        const points = 32;
-        for (let i = 0; i <= points; i++) {
-            const angle = (i / points) * Math.PI * 2;
-            const noise = 0.7 + Math.sin(angle * 5) * 0.1 + Math.cos(angle * 7) * 0.08 + 
-                         Math.sin(angle * 13) * 0.05 + (Math.random() - 0.5) * 0.1;
-            const r = size * noise;
-            const x = cx + Math.cos(angle) * r;
-            const y = cy + Math.sin(angle) * r * 0.8;
-            
-            if (i === 0) ctx.moveTo(x, y);
-            else ctx.lineTo(x, y);
-        }
-        ctx.closePath();
-        ctx.fill();
-        
-        // 绘制山脉
-        if (cont.name === 'eurasia' || cont.name === 'north_america' || cont.name === 'south_america') {
-            this.drawMountainRanges(ctx, cx, cy, size);
-        }
-        
-        // 沙漠（副热带高压带）
-        if (Math.abs(Math.abs(latitude) - 0.4) < 0.15 && cont.name !== 'antarctica') {
-            this.drawDesertAreas(ctx, cx, cy, size);
-        }
-        
-        // 极地冰盖
-        if (Math.abs(latitude) > 0.75 || cont.name === 'antarctica') {
-            this.drawPolarIce(ctx, cx, cy, size);
-        }
-    }
-    
-    drawMountainRanges(ctx, cx, cy, size) {
-        // 喜马拉雅/阿尔卑斯风格山脉
-        ctx.fillStyle = 'rgba(100, 110, 100, 0.6)';
-        for (let i = 0; i < 5; i++) {
-            const mx = cx + (Math.random() - 0.5) * size * 0.6;
-            const my = cy + (Math.random() - 0.5) * size * 0.4;
-            const mw = size * (0.2 + Math.random() * 0.2);
-            const mh = size * (0.1 + Math.random() * 0.1);
-            
-            const mtnGrad = ctx.createLinearGradient(mx - mw, my - mh, mx + mw, my + mh);
-            mtnGrad.addColorStop(0, 'rgba(80, 90, 80, 0)');
-            mtnGrad.addColorStop(0.3, 'rgba(100, 110, 100, 0.5)');
-            mtnGrad.addColorStop(0.5, 'rgba(120, 130, 120, 0.7)');
-            mtnGrad.addColorStop(0.7, 'rgba(100, 110, 100, 0.5)');
-            mtnGrad.addColorStop(1, 'rgba(80, 90, 80, 0)');
-            
-            ctx.fillStyle = mtnGrad;
-            ctx.beginPath();
-            ctx.ellipse(mx, my, mw, mh, Math.random() * Math.PI, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // 雪峰
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-            ctx.beginPath();
-            ctx.ellipse(mx, my - mh * 0.3, mw * 0.3, mh * 0.4, 0, 0, Math.PI * 2);
-            ctx.fill();
-        }
-    }
-    
-    drawDesertAreas(ctx, cx, cy, size) {
-        ctx.fillStyle = 'rgba(194, 168, 120, 0.5)';
-        ctx.beginPath();
-        ctx.ellipse(cx, cy, size * 0.4, size * 0.25, 0, 0, Math.PI * 2);
-        ctx.fill();
-        
-        // 沙丘纹理
-        for (let i = 0; i < 20; i++) {
-            const dx = cx + (Math.random() - 0.5) * size * 0.6;
-            const dy = cy + (Math.random() - 0.5) * size * 0.4;
-            ctx.fillStyle = 'rgba(184, 158, 110, 0.3)';
-            ctx.beginPath();
-            ctx.ellipse(dx, dy, 15, 8, Math.random() * Math.PI, 0, Math.PI * 2);
-            ctx.fill();
-        }
-    }
-    
-    drawPolarIce(ctx, cx, cy, size) {
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
-        ctx.beginPath();
-        ctx.ellipse(cx, cy - size * 0.2, size * 0.7, size * 0.4, 0, 0, Math.PI, true);
-        ctx.fill();
-    }
-    
-    createProceduralClouds() {
-        const canvas = document.createElement('canvas');
-        canvas.width = 1024;
-        canvas.height = 512;
-        const ctx = canvas.getContext('2d');
-        
-        // 透明背景
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        // 绘制云带
-        for (let i = 0; i < 80; i++) {
-            const x = Math.random() * canvas.width;
-            const y = Math.random() * canvas.height;
-            const size = 30 + Math.random() * 80;
-            
-            const grad = ctx.createRadialGradient(x, y, 0, x, y, size);
-            grad.addColorStop(0, 'rgba(255, 255, 255, 0.4)');
-            grad.addColorStop(0.5, 'rgba(255, 255, 255, 0.2)');
-            grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
-            
+        cities.forEach(city => {
+            const cx = city.x * canvas.width;
+            const cy = city.y * canvas.height;
+            const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, city.r * 3);
+            grad.addColorStop(0, 'rgba(255, 220, 150, 0.8)');
+            grad.addColorStop(0.3, 'rgba(255, 200, 120, 0.4)');
+            grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
             ctx.fillStyle = grad;
             ctx.beginPath();
-            ctx.arc(x, y, size, 0, Math.PI * 2);
+            ctx.arc(cx, cy, city.r * 3, 0, Math.PI * 2);
             ctx.fill();
-        }
+        });
         
         return new THREE.CanvasTexture(canvas);
     }
     
-    createClouds() {
-        const cloudGeometry = new THREE.SphereGeometry(10.15, 128, 128);
+    createAdvancedClouds() {
+        const cloudGeometry = new THREE.SphereGeometry(10.12, 256, 256);
         
-        // 使用透明度贴图实现云洞效果
-        const cloudMaterial = new THREE.MeshPhongMaterial({
-            map: this.textures.clouds,
+        const cloudMaterial = new THREE.ShaderMaterial({
+            uniforms: {
+                cloudTexture: { value: this.textures.clouds },
+                time: { value: 0 },
+                sunDirection: { value: new THREE.Vector3(1, 0.4, 1).normalize() }
+            },
+            vertexShader: `
+                varying vec2 vUv;
+                varying vec3 vNormal;
+                void main() {
+                    vUv = uv;
+                    vNormal = normalize(normalMatrix * normal);
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+            `,
+            fragmentShader: `
+                uniform sampler2D cloudTexture;
+                uniform float time;
+                uniform vec3 sunDirection;
+                varying vec2 vUv;
+                varying vec3 vNormal;
+                
+                void main() {
+                    vec2 flowUv = vUv + vec2(time * 0.0005, 0);
+                    float cloud1 = texture2D(cloudTexture, flowUv).r;
+                    float cloud2 = texture2D(cloudTexture, flowUv * 2.0 + vec2(0.5)).r;
+                    float cloudDensity = cloud1 * 0.6 + cloud2 * 0.4;
+                    cloudDensity = smoothstep(0.35, 0.75, cloudDensity);
+                    
+                    float light = max(0.0, dot(vNormal, sunDirection));
+                    vec3 cloudColor = vec3(1.0) * (0.6 + light * 0.4);
+                    
+                    float fresnel = 1.0 - abs(dot(vNormal, vec3(0, 0, 1)));
+                    cloudDensity *= (1.0 - fresnel * 0.3);
+                    
+                    gl_FragColor = vec4(cloudColor, cloudDensity * 0.85);
+                }
+            `,
             transparent: true,
-            opacity: 0.8,
             side: THREE.DoubleSide,
             depthWrite: false,
             blending: THREE.NormalBlending
         });
         
         this.clouds = new THREE.Mesh(cloudGeometry, cloudMaterial);
-        this.clouds.visible = true;
+        this.clouds.castShadow = true;
         this.earthGroup.add(this.clouds);
     }
     
-    createAtmosphere() {
-        // 大气层光晕 - 使用着色器实现瑞利散射效果
-        const atmosphereGeometry = new THREE.SphereGeometry(10.8, 128, 128);
+    createAdvancedAtmosphere() {
+        const rayleighGeometry = new THREE.SphereGeometry(10.6, 128, 128);
         
-        const atmosphereMaterial = new THREE.ShaderMaterial({
+        const rayleighMaterial = new THREE.ShaderMaterial({
             uniforms: {
-                c: { value: 0.6 },
-                p: { value: 4.0 },
-                glowColor: { value: new THREE.Color(0x44aaff) },
-                viewVector: { value: new THREE.Vector3(0, 0, 28) }
+                cameraPos: { value: new THREE.Vector3() },
+                sunDirection: { value: new THREE.Vector3(1, 0.4, 1).normalize() },
+                rayleighColor: { value: new THREE.Color(0x4488ff) }
             },
             vertexShader: `
-                uniform vec3 viewVector;
-                uniform float c;
-                uniform float p;
-                varying float intensity;
+                varying vec3 vNormal;
+                varying vec3 vPosition;
                 void main() {
-                    vec3 vNormal = normalize(normalMatrix * normal);
-                    vec3 vNormel = normalize(normalMatrix * viewVector);
-                    intensity = pow(c - dot(vNormal, vNormel), p);
+                    vNormal = normalize(normalMatrix * normal);
+                    vPosition = position;
                     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
                 }
             `,
             fragmentShader: `
-                uniform vec3 glowColor;
-                varying float intensity;
+                uniform vec3 cameraPos;
+                uniform vec3 sunDirection;
+                uniform vec3 rayleighColor;
+                varying vec3 vNormal;
+                varying vec3 vPosition;
+                
                 void main() {
-                    vec3 glow = glowColor * intensity;
-                    gl_FragColor = vec4(glow, intensity);
+                    vec3 viewDirection = normalize(cameraPos - vPosition);
+                    float cosTheta = dot(viewDirection, vNormal);
+                    float phase = 0.75 * (1.0 + cosTheta * cosTheta);
+                    
+                    float viewAngle = 1.0 - abs(dot(viewDirection, vNormal));
+                    float scattering = pow(viewAngle, 3.0) * phase * 0.08;
+                    
+                    float sunAngle = dot(sunDirection, vNormal);
+                    vec3 sunsetColor = mix(rayleighColor, vec3(1.0, 0.5, 0.3), smoothstep(0.0, -0.5, sunAngle));
+                    
+                    gl_FragColor = vec4(sunsetColor, scattering);
                 }
             `,
+            transparent: true,
             side: THREE.BackSide,
             blending: THREE.AdditiveBlending,
-            transparent: true,
             depthWrite: false
         });
         
-        this.atmosphere = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
+        this.atmosphere = new THREE.Mesh(rayleighGeometry, rayleighMaterial);
         this.earthGroup.add(this.atmosphere);
-        
-        // 内部大气层（更柔和）
-        const innerAtmosphereGeometry = new THREE.SphereGeometry(10.3, 128, 128);
-        const innerAtmosphereMaterial = new THREE.MeshBasicMaterial({
-            color: 0x87ceeb,
-            transparent: true,
-            opacity: 0.08,
-            side: THREE.BackSide
-        });
-        this.innerAtmosphere = new THREE.Mesh(innerAtmosphereGeometry, innerAtmosphereMaterial);
-        this.earthGroup.add(this.innerAtmosphere);
     }
     
-    // 年代切换时更新纹理
+    createAurora() {
+        const particleCount = 3000;
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+        const colors = new Float32Array(particleCount * 3);
+        const sizes = new Float32Array(particleCount);
+        
+        for (let i = 0; i < particleCount; i++) {
+            const i3 = i * 3;
+            const isNorth = Math.random() > 0.5;
+            const polarAngle = isNorth ? Math.random() * 0.25 : Math.PI - Math.random() * 0.25;
+            const azimuth = Math.random() * Math.PI * 2;
+            const radius = 10.3 + Math.random() * 0.8;
+            
+            positions[i3] = radius * Math.sin(polarAngle) * Math.cos(azimuth);
+            positions[i3 + 1] = radius * Math.cos(polarAngle);
+            positions[i3 + 2] = radius * Math.sin(polarAngle) * Math.sin(azimuth);
+            
+            const hue = isNorth ? 0.35 + Math.random() * 0.15 : 0.75 + Math.random() * 0.1;
+            colors[i3] = hue < 0.5 ? 0.2 : 0.8;
+            colors[i3 + 1] = 0.8 + Math.random() * 0.2;
+            colors[i3 + 2] = hue < 0.5 ? 0.4 + Math.random() * 0.3 : 0.9;
+            
+            sizes[i] = 5 + Math.random() * 15;
+        }
+        
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+        
+        const material = new THREE.ShaderMaterial({
+            uniforms: { time: { value: 0 } },
+            vertexShader: `
+                attribute float size;
+                varying vec3 vColor;
+                uniform float time;
+                void main() {
+                    vColor = color;
+                    float wave = sin(time * 2.0 + position.x * 0.5) * 0.3;
+                    vec3 newPos = position + vec3(0, wave, 0);
+                    vec4 mvPosition = modelViewMatrix * vec4(newPos, 1.0);
+                    float pulse = 0.7 + 0.3 * sin(time * 3.0 + position.y);
+                    gl_PointSize = size * pulse * (200.0 / -mvPosition.z);
+                    gl_Position = projectionMatrix * mvPosition;
+                }
+            `,
+            fragmentShader: `
+                varying vec3 vColor;
+                void main() {
+                    float dist = length(gl_PointCoord - vec2(0.5));
+                    float alpha = smoothstep(0.5, 0.0, dist);
+                    gl_FragColor = vec4(vColor, alpha * 0.6);
+                }
+            `,
+            transparent: true,
+            vertexColors: true,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
+        
+        this.aurora = new THREE.Points(geometry, material);
+        this.earthGroup.add(this.aurora);
+    }
+    
+    initMoon() {
+        const moonGeometry = new THREE.SphereGeometry(2.7, 128, 128);
+        
+        textureLoader.load(TEXTURE_URLS.moon, (texture) => {
+            texture.colorSpace = THREE.SRGBColorSpace;
+            const moonMaterial = new THREE.MeshStandardMaterial({
+                map: texture,
+                roughness: 0.9,
+                metalness: 0.0
+            });
+            this.moon = new THREE.Mesh(moonGeometry, moonMaterial);
+            this.moon.position.set(60, 0, 0);
+            this.moon.castShadow = true;
+            this.moon.receiveShadow = true;
+            this.scene.add(this.moon);
+        }, undefined, () => {
+            const fallbackMaterial = new THREE.MeshStandardMaterial({
+                color: 0x888888,
+                roughness: 0.9
+            });
+            this.moon = new THREE.Mesh(moonGeometry, fallbackMaterial);
+            this.moon.position.set(60, 0, 0);
+            this.scene.add(this.moon);
+        });
+    }
+    
+    initControls() {
+        this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+        this.controls.enableDamping = true;
+        this.controls.dampingFactor = 0.05;
+        this.controls.minDistance = 15;
+        this.controls.maxDistance = 200;
+        this.controls.autoRotate = true;
+        this.controls.autoRotateSpeed = 0.2;
+    }
+    
+    initEventListeners() {
+        window.addEventListener('resize', () => this.onWindowResize(), false);
+        
+        this.container.addEventListener('mousedown', () => {
+            this.controls.autoRotate = false;
+        });
+        
+        this.container.addEventListener('mouseup', () => {
+            setTimeout(() => { this.controls.autoRotate = true; }, 3000);
+        });
+    }
+    
+    onWindowResize() {
+        const width = this.container.clientWidth;
+        const height = this.container.clientHeight;
+        this.camera.aspect = width / height;
+        this.camera.updateProjectionMatrix();
+        this.renderer.setSize(width, height);
+    }
+    
     updateForEra(year) {
         this.currentYear = year;
-        
-        // 确定年代
-        let era;
-        if (year > 4000) era = 'hadean';
-        else if (year > 2500) era = 'archean';
-        else if (year > 541) era = 'proterozoic';
-        else if (year > 252) era = 'paleozoic';
-        else if (year > 66) era = 'mesozoic';
-        else if (year > 0) era = 'cenozoic';
-        else era = 'future';
+        let era = year > 4000 ? 'hadean' : year > 2500 ? 'archean' : year > 541 ? 'proterozoic' :
+                   year > 252 ? 'paleozoic' : year > 66 ? 'mesozoic' : year > 0 ? 'cenozoic' : 'future';
         
         const colors = ERA_COLORS[era];
         
-        // 只有现代地球（cenozoic 0年）使用真实纹理
         if (era === 'cenozoic' && year <= 0) {
             this.setRealisticMode(true);
         } else {
             this.setRealisticMode(false);
-            this.drawEarthTexture(colors);
         }
         
-        // 更新大气层颜色
         if (this.atmosphere) {
             const glowColor = new THREE.Color(colors.atmosphere);
-            this.atmosphere.material.uniforms.glowColor.value = glowColor;
-            this.innerAtmosphere.material.color = glowColor;
+            this.atmosphere.material.uniforms.rayleighColor.value = glowColor;
         }
         
-        // 更新云层
         if (this.clouds) {
             this.clouds.material.opacity = colors.cloudOpacity * 2;
             this.clouds.visible = colors.cloudOpacity > 0.05;
-        }
-        
-        // 更新光照
-        if (this.sunLight) {
-            if (colors.hasLava) {
-                this.sunLight.intensity = 1.0;
-                this.sunLight.color.setHex(0xffaa66);
-            } else {
-                this.sunLight.intensity = 2.0;
-                this.sunLight.color.setHex(0xffffff);
-            }
         }
     }
     
@@ -674,191 +640,111 @@ export class Earth {
         if (!enabled && !this.isRealisticMode) return;
         
         if (enabled && this.texturesLoaded) {
-            // 切换到真实纹理
             this.earthMaterial.map = this.textures.day;
             this.earthMaterial.normalMap = this.textures.normal;
             this.earthMaterial.roughnessMap = this.textures.specular;
-            this.earthMaterial.metalnessMap = this.textures.specular;
-            this.earthMaterial.roughness = 0.8;
-            this.earthMaterial.metalness = 0.1;
-            this.earthMaterial.color.setHex(0xffffff);
-            
-            if (this.nightLights) {
-                this.nightLights.visible = true;
-            }
-            if (this.clouds && this.textures.clouds) {
-                this.clouds.material.map = this.textures.clouds;
-            }
+            if (this.nightLights) this.nightLights.visible = true;
+            if (this.clouds) this.clouds.material.uniforms.cloudTexture.value = this.textures.clouds;
+            if (this.aurora) this.aurora.visible = true;
             this.isRealisticMode = true;
         } else {
-            // 切换到程序化纹理
             this.createProceduralTextures();
             this.earthMaterial.map = this.textures.day;
-            this.earthMaterial.normalMap = this.textures.normal;
-            this.earthMaterial.roughnessMap = this.textures.specular;
-            this.earthMaterial.metalnessMap = this.textures.specular;
-            
-            if (this.nightLights) {
-                this.nightLights.visible = false;
-            }
+            if (this.nightLights) this.nightLights.visible = false;
+            if (this.aurora) this.aurora.visible = false;
             this.isRealisticMode = false;
         }
-        
         this.earthMaterial.needsUpdate = true;
     }
     
-    drawEarthTexture(colors) {
-        if (this.isRealisticMode) return;
-        
-        const canvas = this.earthCanvas || document.createElement('canvas');
-        canvas.width = 2048;
-        canvas.height = 1024;
-        this.earthCanvas = canvas;
-        const ctx = canvas.getContext('2d');
-        
-        if (colors.hasLava) {
-            this.drawLavaSurface(ctx, canvas.width, canvas.height);
-        } else {
-            this.drawProceduralEarthWithColors(ctx, canvas.width, canvas.height, colors);
-        }
-        
-        if (this.textures && this.textures.day) {
-            this.textures.day.image = canvas;
-            this.textures.day.needsUpdate = true;
-        }
-    }
-    
-    drawProceduralEarthWithColors(ctx, width, height, colors) {
-        const oceanColor = '#' + colors.ocean.toString(16).padStart(6, '0');
-        const landColor = '#' + colors.land.toString(16).padStart(6, '0');
-        
-        // 海洋背景
-        ctx.fillStyle = oceanColor;
+    drawProceduralEarth(ctx, width, height) {
+        const oceanGrad = ctx.createLinearGradient(0, 0, 0, height);
+        oceanGrad.addColorStop(0, '#1a3a5c');
+        oceanGrad.addColorStop(0.5, '#0d4a8c');
+        oceanGrad.addColorStop(1, '#1a3a5c');
+        ctx.fillStyle = oceanGrad;
         ctx.fillRect(0, 0, width, height);
         
-        // 简化的大陆渲染
-        // ... (使用colors中的颜色)
-    }
-    
-    drawLavaSurface(ctx, width, height) {
-        const lavaBase = ctx.createRadialGradient(width/2, height/2, 0, width/2, height/2, width);
-        lavaBase.addColorStop(0, '#4a2000');
-        lavaBase.addColorStop(0.5, '#2a1000');
-        lavaBase.addColorStop(1, '#1a0500');
-        ctx.fillStyle = lavaBase;
-        ctx.fillRect(0, 0, width, height);
-        
-        // 熔岩流动纹理
-        for (let i = 0; i < 80; i++) {
+        for (let i = 0; i < 500; i++) {
             const x = Math.random() * width;
             const y = Math.random() * height;
-            const size = 20 + Math.random() * 100;
-            
+            const grad = ctx.createRadialGradient(x, y, 0, x, y, 50);
+            grad.addColorStop(0, 'rgba(100, 150, 200, 0.03)');
+            grad.addColorStop(1, 'rgba(100, 150, 200, 0)');
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(x, y, 50, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+    
+    createProceduralClouds() {
+        const canvas = document.createElement('canvas');
+        canvas.width = 1024; canvas.height = 512;
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        for (let i = 0; i < 100; i++) {
+            const x = Math.random() * canvas.width;
+            const y = Math.random() * canvas.height;
+            const size = 40 + Math.random() * 80;
             const grad = ctx.createRadialGradient(x, y, 0, x, y, size);
-            grad.addColorStop(0, 'rgba(255, 100, 0, 0.6)');
-            grad.addColorStop(0.5, 'rgba(200, 50, 0, 0.3)');
-            grad.addColorStop(1, 'rgba(100, 20, 0, 0)');
-            
+            grad.addColorStop(0, 'rgba(255, 255, 255, 0.4)');
+            grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
             ctx.fillStyle = grad;
             ctx.beginPath();
             ctx.arc(x, y, size, 0, Math.PI * 2);
             ctx.fill();
         }
-    }
-    
-    initControls() {
-        this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-        this.controls.enableDamping = true;
-        this.controls.dampingFactor = 0.05;
-        this.controls.minDistance = 12;
-        this.controls.maxDistance = 80;
-        this.controls.autoRotate = true;
-        this.controls.autoRotateSpeed = 0.3;
-        
-        // 限制垂直角度，避免从太下方看
-        this.controls.minPolarAngle = Math.PI * 0.1;
-        this.controls.maxPolarAngle = Math.PI * 0.9;
-    }
-    
-    initEventListeners() {
-        window.addEventListener('resize', () => this.onWindowResize(), false);
-        
-        // 鼠标交互时暂停自动旋转
-        this.container.addEventListener('mousedown', () => {
-            this.controls.autoRotate = false;
-        });
-        
-        this.container.addEventListener('mouseup', () => {
-            setTimeout(() => {
-                this.controls.autoRotate = true;
-            }, 2000);
-        });
-    }
-    
-    onWindowResize() {
-        const width = this.container.clientWidth;
-        const height = this.container.clientHeight;
-        
-        this.camera.aspect = width / height;
-        this.camera.updateProjectionMatrix();
-        this.renderer.setSize(width, height);
-        
-        // 更新大气层着色器的视图向量
-        if (this.atmosphere) {
-            this.atmosphere.material.uniforms.viewVector.value = this.camera.position;
-        }
-    }
-    
-    addCreatureMarker(creature) {
-        return { creature: creature, element: null };
-    }
-    
-    clearMarkers() {
-        this.markers = [];
-    }
-    
-    latLonToScreen(lat, lon) {
-        return { x: 0, y: 0, visible: false };
+        return new THREE.CanvasTexture(canvas);
     }
     
     animate() {
         const delta = this.clock.getDelta();
-        const time = this.clock.getElapsedTime();
+        this.time += delta;
         
-        // 云层旋转（比地球稍快）
-        if (this.clouds && this.clouds.visible) {
-            this.clouds.rotation.y += 0.0003;
+        if (this.clouds) {
+            this.clouds.material.uniforms.time.value = this.time;
+            this.clouds.rotation.y += 0.0002;
         }
         
-        // 地球自转
         if (this.earthGroup) {
             this.earthGroup.rotation.y += 0.0001;
         }
         
-        // 星星闪烁动画
+        if (this.moon) {
+            const moonAngle = this.time * 0.0005;
+            this.moon.position.x = Math.cos(moonAngle) * 60;
+            this.moon.position.z = Math.sin(moonAngle) * 60;
+            this.moon.rotation.y += 0.0001;
+        }
+        
         if (this.stars) {
-            this.stars.material.uniforms.time.value = time;
-            this.stars.rotation.y += 0.00005;
+            this.stars.material.uniforms.time.value = this.time;
         }
         
-        // 大气层光晕随视角更新
+        if (this.milkyWay) {
+            this.milkyWay.material.uniforms.time.value = this.time;
+            this.milkyWay.rotation.y += 0.00002;
+        }
+        
+        if (this.aurora) {
+            this.aurora.material.uniforms.time.value = this.time;
+            this.aurora.rotation.y -= 0.0003;
+        }
+        
         if (this.atmosphere) {
-            this.atmosphere.material.uniforms.viewVector.value = this.camera.position;
+            this.atmosphere.material.uniforms.cameraPos.value = this.camera.position;
         }
         
-        // 城市灯光随昼夜变化（根据太阳位置）
         if (this.nightLights && this.nightLights.visible) {
-            const sunDirection = new THREE.Vector3(50, 30, 50).normalize();
-            // 夜晚面朝向相机时增强亮度
-            const cameraDirection = this.camera.position.clone().normalize();
-            const nightVisibility = Math.max(0, -sunDirection.dot(cameraDirection));
-            this.nightLights.material.opacity = 0.6 + nightVisibility * 0.4;
+            const sunDir = this.sunPosition.clone().normalize();
+            const camDir = this.camera.position.clone().normalize();
+            const nightVisibility = Math.max(0, -sunDir.dot(camDir));
+            this.nightLights.material.opacity = nightVisibility * 1.2;
         }
         
-        if (this.controls) {
-            this.controls.update();
-        }
-        
+        if (this.controls) this.controls.update();
         if (this.renderer && this.scene && this.camera) {
             this.renderer.render(this.scene, this.camera);
         }
